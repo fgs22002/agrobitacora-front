@@ -6,6 +6,7 @@ const RecordForm = ({h2_text, button_text, newDate, newDuration, newActivity, ne
     <form>
     <div>
       Date: <input 
+              type="date"
               value={newDate}
               onChange={handleDateChange}
             />

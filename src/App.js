@@ -12,7 +12,7 @@ function App() {
     const [ error, setError] = useState(null)
     const [ edit, setEdit] = useState(false)
     const [ editId, setEditId ] = useState(null)
-    const [ newDate, setNewDate ] = useState('...')
+    const [ newDate, setNewDate ] = useState(new Date())
     const [ newDuration, setNewDuration ] = useState(0)
     const [ newActivity, setNewActivity ] = useState('...')
     const [ newDescription, setNewDescription ] = useState('...')
