@@ -18,19 +18,24 @@ function App() {
 
   // Effects
   useEffect(() => {
-    recordsService
-      .getAll().then(records => {
-        setRecords(records)
-      }).catch(error => {
-        console.log(error)
-        setError(
-          'Problems trying to retrieve all records'
-        )
-        setTimeout(() => {
-          setError(null)
-        }, 5000)
-      })
-  }, [])
+    if (user) {
+      recordsService
+        .getAll().then(records => {
+          console.log('Estos son los records',records)
+          setRecords(records)
+        }).catch(error => {
+          console.log(error)
+          setError(
+            'Problems trying to retrieve all records'
+          )
+          setTimeout(() => {
+            setError(null)
+          }, 5000)
+        })
+    } else {
+      setRecords([])
+    }
+  }, [user])
 
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem('loggedUser')
