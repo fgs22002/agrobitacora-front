@@ -21,7 +21,6 @@ function App() {
     if (user) {
       recordsService
         .getAll().then(records => {
-          console.log('Estos son los records',records)
           setRecords(records)
         }).catch(error => {
           console.log(error)
@@ -48,7 +47,6 @@ function App() {
 
   // Handles
   const handleDeleteRecord = (id) => {
-    console.log('Deleting...', id)
     recordsService
       .remove(id)
       .then(response => {
@@ -159,21 +157,22 @@ function App() {
       <Notification message={error} className="error" />
 
       {user === null ?
-        <Togglable buttonLabel='login'>
+        <Togglable buttonLabel='Login'>
           <LoginForm handleSubmit={handleLogin} />
         </Togglable> :
         <div>
           <p>{user.name} logged-in <button onClick={() => handleLogout()}>logout</button></p>
-          <RecordForm
-            isEdit={edit}
-            addRecord={edit?editRecord:addRecord}
-            cancelEdit={cancelEdit}
-          />
+          <Togglable buttonLabel='Record form'>
+            <RecordForm
+              isEdit={edit}
+              addRecord={edit?editRecord:addRecord}
+              cancelEdit={cancelEdit}
+            />
+          </Togglable>
+          <Records records={records} handleDelete={handleDeleteRecord} handleEdit={handleEditButton} />
         </div>
       }
 
-      <h2>Records</h2>
-      <Records records={records} handleDelete={handleDeleteRecord} handleEdit={handleEditButton} />
     </>
   )
 }

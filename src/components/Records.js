@@ -3,6 +3,7 @@ import Record from './Record'
 
 const Records = ({ records, handleDelete, handleEdit }) => (
   <div>
+    <h2>Records</h2>
     <table>
       <thead>
         <tr>
