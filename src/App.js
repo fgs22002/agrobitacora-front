@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Records from './components/Records'
 import Notification from './components/Notification'
 import RecordForm from './components/RecordForm'
@@ -70,6 +70,7 @@ function App() {
   }
 
   const handleEditButton = (record) => {
+    recordFormRef.current.makeVisible(true)
     setEdit(record)
   }
 
@@ -147,8 +148,12 @@ function App() {
   }
 
   const cancelEdit = () => {
+    recordFormRef.current.makeVisible(false)
     setEdit(null)
   }
+
+  // Referencias a componentes
+  const recordFormRef = useRef()
 
   return (
     <>
@@ -162,7 +167,7 @@ function App() {
         </Togglable> :
         <div>
           <p>{user.name} logged-in <button onClick={() => handleLogout()}>logout</button></p>
-          <Togglable buttonLabel='Record form'>
+          <Togglable buttonLabel='Record form' ref={recordFormRef}>
             <RecordForm
               isEdit={edit}
               addRecord={edit?editRecord:addRecord}
