@@ -6,11 +6,16 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import recordsService from './services/records'
 import loginService from './services/login'
+import { allRecords, createRecord, deleteRecord, updateRecord } from './reducers/recordReducer'
+import { useSelector, useDispatch } from 'react-redux'
 
 import './index.css'
 
 function App() {
-  const [ records, setRecords ] = useState([])
+  const dispatch = useDispatch()
+  const records = useSelector(state => state)
+  //const [ records, setRecords ] = useState([])
+
   const [ notification, setNotification] = useState(null)
   const [ error, setError] = useState(null)
   const [ edit, setEdit] = useState(null)
@@ -18,10 +23,20 @@ function App() {
 
   // Effects
   useEffect(() => {
+    const loggedUserJson = window.localStorage.getItem('loggedUser')
+    if (loggedUserJson) {
+      const user = JSON.parse(loggedUserJson)
+      setUser(user)
+      recordsService.setToken(user.token)
+    }
+  }, [])
+
+  useEffect(() => {
     if (user) {
       recordsService
         .getAll().then(records => {
-          setRecords(records)
+          //setRecords(records)
+          dispatch(allRecords(records))
         }).catch(error => {
           console.log(error)
           setError(
@@ -32,18 +47,11 @@ function App() {
           }, 5000)
         })
     } else {
-      setRecords([])
+      //setRecords([])
+      dispatch(allRecords([]))
     }
   }, [user])
 
-  useEffect(() => {
-    const loggedUserJson = window.localStorage.getItem('loggedUser')
-    if (loggedUserJson) {
-      const user = JSON.parse(loggedUserJson)
-      setUser(user)
-      recordsService.setToken(user.token)
-    }
-  }, [])
 
   // Handles
   const handleDeleteRecord = (id) => {
@@ -57,7 +65,8 @@ function App() {
         setTimeout(() => {
           setNotification(null)
         }, 5000)
-        setRecords(records.filter(record => record.id !== id))
+        //setRecords(records.filter(record => record.id !== id))
+        dispatch(deleteRecord(id))
       }).catch(error => {
         console.log(error)
         setError(
@@ -111,7 +120,8 @@ function App() {
         setTimeout(() => {
           setNotification(null)
         }, 5000)
-        setRecords(records.concat(addedRecord))
+        //setRecords(records.concat(addedRecord))
+        dispatch(createRecord(addedRecord))
       }).catch(error => {
         console.log(error)
         setError(
@@ -133,7 +143,8 @@ function App() {
         setTimeout(() => {
           setNotification(null)
         }, 5000)
-        setRecords(records.map(record => record.id === edit.id ? updatedRecord : record))
+        //setRecords(records.map(record => record.id === edit.id ? updatedRecord : record))
+        dispatch(updateRecord(updatedRecord))
       }).catch(error => {
         console.log(error)
         setError(
@@ -154,7 +165,6 @@ function App() {
 
   // Referencias a componentes
   const recordFormRef = useRef()
-
   return (
     <>
       <h1>Agrobitacora</h1>
