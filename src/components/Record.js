@@ -1,7 +1,5 @@
 import React from 'react'
 
-
-
 const Record = ({ record, handleDelete, handleEdit }) => {
   const deleteClick = (record) => {
     if (window.confirm(`Delete ${record.id}?`)) {

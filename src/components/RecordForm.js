@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
+import recordsService from '../services/records'
+import { createRecord, updateRecord } from '../reducers/recordReducer'
+import { useDispatch } from 'react-redux'
 
-const RecordForm = ({ isEdit, addRecord, cancelEdit }) => {
+const RecordForm = ({ isEdit, cancelEdit , setNotification , setError }) => {
+  const dispatch = useDispatch()
   //Estado
   const [ newDate, setNewDate ] = useState(new Date())
   const [ newDuration, setNewDuration ] = useState(0)
@@ -19,17 +23,6 @@ const RecordForm = ({ isEdit, addRecord, cancelEdit }) => {
       setNewResponsible(isEdit.responsable)
     }
   }
-  /*
-    useEffect(()=>{
-      if (isEdit) {
-        setNewDate(isEdit.fecha)
-        setNewDuration(isEdit.duracion)
-        setNewActivity(isEdit.actividad)
-        setNewDescription(isEdit.descripcion)
-        setNewResponsible(isEdit.responsable)
-      }
-    },[isEdit])
-    */
 
   //Handles
   const handleDateChange = (event) => {
@@ -56,27 +49,74 @@ const RecordForm = ({ isEdit, addRecord, cancelEdit }) => {
     cancelEdit()
   }
 
-  const handleAddRecord = (event) => {
-    event.preventDefault()
+  const addRecord = (newRecord) => {
+    recordsService
+      .create(newRecord)
+      .then(addedRecord => {
+        setNotification(
+          `Added ${addedRecord.id}`
+        )
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+        dispatch(createRecord(addedRecord))
+      }).catch(error => {
+        console.log(error)
+        setError(
+          'Problems trying to add new record'
+        )
+        setTimeout(() => {
+          setError(null)
+        }, 5000)
+      })
+  }
 
-    addRecord({
+  const editRecord = (newRecord) => {
+    recordsService
+      .update(edit.id, newRecord)
+      .then(updatedRecord => {
+        setNotification(
+          `Updated ${updatedRecord.id}`
+        )
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+        dispatch(updateRecord(updatedRecord))
+      }).catch(error => {
+        console.log(error)
+        setError(
+          'Problems trying to add new record'
+        )
+        setTimeout(() => {
+          setError(null)
+        }, 5000)
+      }).finally(() => {
+        cancelEdit()
+      })
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const newRecord = {
       fecha: newDate,
       duracion: newDuration,
       actividad: newActivity,
       descripcion: newDescription,
       responsable: newResponsible,
-    })
+    }
     setNewDate(new Date())
     setNewDuration(0)
     setNewActivity('')
     setNewDescription('')
     setNewResponsible('')
+
+    isEdit ? editRecord(newRecord): addRecord(newRecord)
   }
 
   return (
     <>
       <h2>{isEdit?'Edit record':'Add a new record'}</h2>
-      <form onSubmit={handleAddRecord}>
+      <form onSubmit={handleSubmit}>
         <div>
             Date: <input
             type="date"

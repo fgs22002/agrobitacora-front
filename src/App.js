@@ -6,15 +6,13 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import recordsService from './services/records'
 import loginService from './services/login'
-import { allRecords, createRecord, deleteRecord, updateRecord } from './reducers/recordReducer'
-import { useSelector, useDispatch } from 'react-redux'
+import { allRecords } from './reducers/recordReducer'
+import { useDispatch } from 'react-redux'
 
 import './index.css'
 
 function App() {
   const dispatch = useDispatch()
-  const records = useSelector(state => state)
-  //const [ records, setRecords ] = useState([])
 
   const [ notification, setNotification] = useState(null)
   const [ error, setError] = useState(null)
@@ -54,30 +52,6 @@ function App() {
 
 
   // Handles
-  const handleDeleteRecord = (id) => {
-    recordsService
-      .remove(id)
-      .then(response => {
-        console.log(response)
-        setNotification(
-          `Deleted ${id}`
-        )
-        setTimeout(() => {
-          setNotification(null)
-        }, 5000)
-        //setRecords(records.filter(record => record.id !== id))
-        dispatch(deleteRecord(id))
-      }).catch(error => {
-        console.log(error)
-        setError(
-          `Problems trying to delete record ${id}`
-        )
-        setTimeout(() => {
-          setError(null)
-        }, 5000)
-      })
-  }
-
   const handleEditButton = (record) => {
     recordFormRef.current.makeVisible(true)
     setEdit(record)
@@ -110,54 +84,6 @@ function App() {
     }
   }
 
-  const addRecord = (newRecord) => {
-    recordsService
-      .create(newRecord)
-      .then(addedRecord => {
-        setNotification(
-          `Added ${addedRecord.id}`
-        )
-        setTimeout(() => {
-          setNotification(null)
-        }, 5000)
-        //setRecords(records.concat(addedRecord))
-        dispatch(createRecord(addedRecord))
-      }).catch(error => {
-        console.log(error)
-        setError(
-          'Problems trying to add new record'
-        )
-        setTimeout(() => {
-          setError(null)
-        }, 5000)
-      })
-  }
-
-  const editRecord = (newRecord) => {
-    recordsService
-      .update(edit.id, newRecord)
-      .then(updatedRecord => {
-        setNotification(
-          `Updated ${updatedRecord.id}`
-        )
-        setTimeout(() => {
-          setNotification(null)
-        }, 5000)
-        //setRecords(records.map(record => record.id === edit.id ? updatedRecord : record))
-        dispatch(updateRecord(updatedRecord))
-      }).catch(error => {
-        console.log(error)
-        setError(
-          'Problems trying to add new record'
-        )
-        setTimeout(() => {
-          setError(null)
-        }, 5000)
-      }).finally(() => {
-        setEdit(null)
-      })
-  }
-
   const cancelEdit = () => {
     recordFormRef.current.makeVisible(false)
     setEdit(null)
@@ -180,11 +106,16 @@ function App() {
           <Togglable buttonLabel='Record form' ref={recordFormRef}>
             <RecordForm
               isEdit={edit}
-              addRecord={edit?editRecord:addRecord}
               cancelEdit={cancelEdit}
+              setNotification={setNotification}
+              setError={setError}
             />
           </Togglable>
-          <Records records={records} handleDelete={handleDeleteRecord} handleEdit={handleEditButton} />
+          <Records
+            handleEdit={handleEditButton}
+            setNotification={setNotification}
+            setError={setError}
+          />
         </div>
       }
 
