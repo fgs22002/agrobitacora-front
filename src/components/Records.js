@@ -1,12 +1,32 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Record from './Record'
 import recordsService from '../services/records'
-import { deleteRecord } from '../reducers/recordReducer'
+import { allRecords, deleteRecord } from '../reducers/recordReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
 const Records = ({ handleEdit, setNotification , setError }) => {
   const dispatch = useDispatch()
-  const records = useSelector(state => state)
+  const user = useSelector(state => state.user)
+  const records = useSelector(state => state.records)
+
+  useEffect(() => {
+    if (user) {
+      recordsService
+        .getAll().then(records => {
+          dispatch(allRecords(records))
+        }).catch(error => {
+          console.log(error)
+          setError(
+            'Problems trying to retrieve all records'
+          )
+          setTimeout(() => {
+            setError(null)
+          }, 5000)
+        })
+    } else {
+      dispatch(allRecords([]))
+    }
+  }, [user])
 
   const delRecord = (id) => {
     recordsService
