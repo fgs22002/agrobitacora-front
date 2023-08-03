@@ -1,58 +1,35 @@
-const recordReducer = (state = [], action) => {
-  switch(action.type) {
-  case 'ALL':
-    return action.data
-  case 'NEW_RECORD':
-    return [...state, action.data]
-  case 'DELETE_RECORD': {
-    const id = action.data.id
-    return state.filter(r => r.id !== id)
-  }
-  case 'UPDATE_RECORD': {
-    const id = action.data.id
-    const recordToChange = state.find(r => r.id === id)
-    const changedNote = {
-      ...recordToChange,
-      fecha: action.data.fecha,
-      duracion: action.data.duracion,
-      actividad: action.data.actividad,
-      descripcion: action.data.descripcion,
-      responsable: action.data.responsable,
+import { createSlice } from '@reduxjs/toolkit'
+const recordSlice = createSlice({
+  name: 'records',
+  initialState: [],
+  reducers: {
+    createRecord(state, action) {
+      state.push(action.payload)
+    },
+    allRecords(state, action) {
+      return action.payload
+    },
+    updateRecord(state, action) {
+      const id = action.payload.id
+      const recordToChange = state.find(r => r.id === id)
+      const changedNote = {
+        ...recordToChange,
+        fecha: action.payload.fecha,
+        duracion: action.payload.duracion,
+        actividad: action.payload.actividad,
+        descripcion: action.payload.descripcion,
+        responsable: action.payload.responsable,
+      }
+      return state.map(record =>
+        record.id !== id? record:changedNote
+      )
+    },
+    deleteRecord(state, action) {
+      const id = action.payload
+      return state.filter(r => r.id !== id)
     }
-    return state.map(record =>
-      record.id !== id? record:changedNote
-    )
-  }
-  default:
-    return state
-  }
-}
+  },
+})
 
-export const createRecord = (content) => {
-  return {
-    type: 'NEW_RECORD',
-    data: content
-  }
-}
-
-export const allRecords = (content) => {
-  return {
-    type: 'ALL',
-    data: content
-  }
-}
-
-export const updateRecord = (content) => {
-  return {
-    type: 'UPDATE_RECORD',
-    data: content
-  }
-}
-
-export const deleteRecord = (id) => {
-  return {
-    type: 'DELETE_RECORD',
-    data: { id }
-  }
-}
-export default recordReducer
+export const { createRecord, allRecords, updateRecord, deleteRecord } = recordSlice.actions
+export default recordSlice.reducer

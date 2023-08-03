@@ -23,7 +23,7 @@ describe('recordReducer', () => {
       }
     ]
     const action = {
-      type: 'ALL',
+      type: 'records/allRecords',
       data: [{
         fecha: new Date(),
         duracion: 3,
@@ -60,7 +60,7 @@ describe('recordReducer', () => {
   test('returns new state with action NEW_RECORD', () => {
     const state = []
     const action = {
-      type: 'NEW_RECORD',
+      type: 'records/createRecord',
       data: {
         fecha: new Date(),
         duracion: 56,
@@ -98,7 +98,7 @@ describe('recordReducer', () => {
       }
     ]
     const action = {
-      type: 'UPDATE_RECORD',
+      type: 'records/updateRecord',
       data: {
         fecha: '2023/07/31',
         duracion: 3,
@@ -144,7 +144,7 @@ describe('recordReducer', () => {
       }
     ]
     const action = {
-      type: 'DELETE_RECORD',
+      type: 'records/deleteRecord',
       data: {
         id: 2
       }

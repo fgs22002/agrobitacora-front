@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import recordsService from '../services/records'
 import { createRecord, updateRecord } from '../reducers/recordReducer'
-import { useDispatch } from 'react-redux'
+import { setError, setNotification } from '../reducers/notificationReducer'
+import { useDispatch, useSelector } from 'react-redux'
+import { cancelUpdate } from '../reducers/updateReducer'
 
-const RecordForm = ({ isEdit, cancelEdit , setNotification , setError }) => {
+const RecordForm = () => {
   const dispatch = useDispatch()
+  const isEdit = useSelector(state => state.update)
   //Estado
   const [ newDate, setNewDate ] = useState(new Date())
   const [ newDuration, setNewDuration ] = useState(0)
@@ -12,6 +15,7 @@ const RecordForm = ({ isEdit, cancelEdit , setNotification , setError }) => {
   const [ newDescription, setNewDescription ] = useState('')
   const [ newResponsible, setNewResponsible ] = useState('')
   const [ edit, setEdit] = useState(isEdit)
+
 
   if (edit !== isEdit) {
     setEdit(isEdit)
@@ -46,52 +50,52 @@ const RecordForm = ({ isEdit, cancelEdit , setNotification , setError }) => {
     setNewActivity('')
     setNewDescription('')
     setNewResponsible('')
-    cancelEdit()
+    dispatch(cancelUpdate())
   }
 
   const addRecord = (newRecord) => {
     recordsService
       .create(newRecord)
       .then(addedRecord => {
-        setNotification(
+        dispatch(setNotification(
           `Added ${addedRecord.id}`
-        )
+        ))
         setTimeout(() => {
-          setNotification(null)
+          dispatch(setNotification(null))
         }, 5000)
         dispatch(createRecord(addedRecord))
       }).catch(error => {
         console.log(error)
-        setError(
+        dispatch(setError(
           'Problems trying to add new record'
-        )
+        ))
         setTimeout(() => {
-          setError(null)
+          dispatch(setError(null))
         }, 5000)
       })
   }
 
   const editRecord = (newRecord) => {
     recordsService
-      .update(edit.id, newRecord)
+      .update(isEdit.id, newRecord)
       .then(updatedRecord => {
-        setNotification(
+        dispatch(setNotification(
           `Updated ${updatedRecord.id}`
-        )
+        ))
         setTimeout(() => {
-          setNotification(null)
+          dispatch(setNotification(null))
         }, 5000)
         dispatch(updateRecord(updatedRecord))
       }).catch(error => {
         console.log(error)
-        setError(
-          'Problems trying to add new record'
-        )
+        dispatch(setError(
+          'Problems trying to update record'
+        ))
         setTimeout(() => {
-          setError(null)
+          dispatch(setError(null))
         }, 5000)
       }).finally(() => {
-        cancelEdit()
+        handleCancelEdit()
       })
   }
 

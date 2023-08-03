@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import loginService from '../services/login'
 import recordsService from '../services/records'
 import { userChange } from '../reducers/userReducer'
+import { setError } from '../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 
-const LoginForm = ({ setError }) => {
+const LoginForm = () => {
   const dispatch = useDispatch()
   //Estado
   const [ username, setUsername ] = useState('')
@@ -29,9 +30,9 @@ const LoginForm = ({ setError }) => {
       recordsService.setToken(user.token)
       dispatch(userChange(user))
     } catch (exception) {
-      setError('Wrong credentials')
+      dispatch(setError('Wrong credentials'))
       setTimeout(() => {
-        setError(null)
+        dispatch(setError(null))
       }, 5000)
     }
   }

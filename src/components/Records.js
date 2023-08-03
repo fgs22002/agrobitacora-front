@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
 import Record from './Record'
 import recordsService from '../services/records'
-import { allRecords, deleteRecord } from '../reducers/recordReducer'
+import { allRecords } from '../reducers/recordReducer'
+import { setError } from '../reducers/notificationReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
-const Records = ({ handleEdit, setNotification , setError }) => {
+const Records = ( ) => {
   const dispatch = useDispatch()
   const user = useSelector(state => state.user)
   const records = useSelector(state => state.records)
@@ -16,41 +17,17 @@ const Records = ({ handleEdit, setNotification , setError }) => {
           dispatch(allRecords(records))
         }).catch(error => {
           console.log(error)
-          setError(
+          dispatch(setError(
             'Problems trying to retrieve all records'
-          )
+          ))
           setTimeout(() => {
-            setError(null)
+            dispatch(setError(null))
           }, 5000)
         })
     } else {
       dispatch(allRecords([]))
     }
   }, [user])
-
-  const delRecord = (id) => {
-    recordsService
-      .remove(id)
-      .then(response => {
-        console.log(response)
-        setNotification(
-          `Deleted ${id}`
-        )
-        setTimeout(() => {
-          setNotification(null)
-        }, 5000)
-        //setRecords(records.filter(record => record.id !== id))
-        dispatch(deleteRecord(id))
-      }).catch(error => {
-        console.log(error)
-        setError(
-          `Problems trying to delete record ${id}`
-        )
-        setTimeout(() => {
-          setError(null)
-        }, 5000)
-      })
-  }
 
   return (
     <div>
@@ -69,7 +46,7 @@ const Records = ({ handleEdit, setNotification , setError }) => {
           </tr>
         </thead>
         <tbody>
-          {records.map((record) => <Record key={record.id} record={record} handleDelete={delRecord} handleEdit={handleEdit} />)}
+          {records.map((record) => <Record key={record.id} record={record} />)}
         </tbody>
       </table>
     </div>
