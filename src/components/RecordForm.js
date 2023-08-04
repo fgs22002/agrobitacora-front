@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
-import recordsService from '../services/records'
-import { createRecord, updateRecord } from '../reducers/recordReducer'
-import { setError, setNotification } from '../reducers/notificationReducer'
+import { newRecord, changeRecord } from '../reducers/recordReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import { cancelUpdate } from '../reducers/updateReducer'
 
@@ -53,55 +51,18 @@ const RecordForm = () => {
     dispatch(cancelUpdate())
   }
 
-  const addRecord = (newRecord) => {
-    recordsService
-      .create(newRecord)
-      .then(addedRecord => {
-        dispatch(setNotification(
-          `Added ${addedRecord.id}`
-        ))
-        setTimeout(() => {
-          dispatch(setNotification(null))
-        }, 5000)
-        dispatch(createRecord(addedRecord))
-      }).catch(error => {
-        console.log(error)
-        dispatch(setError(
-          'Problems trying to add new record'
-        ))
-        setTimeout(() => {
-          dispatch(setError(null))
-        }, 5000)
-      })
+  const addRecord = (record) => {
+    dispatch(newRecord(record))
   }
 
-  const editRecord = (newRecord) => {
-    recordsService
-      .update(isEdit.id, newRecord)
-      .then(updatedRecord => {
-        dispatch(setNotification(
-          `Updated ${updatedRecord.id}`
-        ))
-        setTimeout(() => {
-          dispatch(setNotification(null))
-        }, 5000)
-        dispatch(updateRecord(updatedRecord))
-      }).catch(error => {
-        console.log(error)
-        dispatch(setError(
-          'Problems trying to update record'
-        ))
-        setTimeout(() => {
-          dispatch(setError(null))
-        }, 5000)
-      }).finally(() => {
-        handleCancelEdit()
-      })
+  const editRecord = (record) => {
+    dispatch(changeRecord(isEdit.id, record))
+    handleCancelEdit()
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    const newRecord = {
+    const record = {
       fecha: newDate,
       duracion: newDuration,
       actividad: newActivity,
@@ -114,7 +75,7 @@ const RecordForm = () => {
     setNewDescription('')
     setNewResponsible('')
 
-    isEdit ? editRecord(newRecord): addRecord(newRecord)
+    isEdit ? editRecord(record): addRecord(record)
   }
 
   return (

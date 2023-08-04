@@ -1,32 +1,15 @@
 import React, { useEffect } from 'react'
 import Record from './Record'
-import recordsService from '../services/records'
-import { allRecords } from '../reducers/recordReducer'
-import { setError } from '../reducers/notificationReducer'
+import { initializeRecords } from '../reducers/recordReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
-const Records = ( ) => {
+const Records = ( { recordFormRef } ) => {
   const dispatch = useDispatch()
   const user = useSelector(state => state.user)
   const records = useSelector(state => state.records)
 
   useEffect(() => {
-    if (user) {
-      recordsService
-        .getAll().then(records => {
-          dispatch(allRecords(records))
-        }).catch(error => {
-          console.log(error)
-          dispatch(setError(
-            'Problems trying to retrieve all records'
-          ))
-          setTimeout(() => {
-            dispatch(setError(null))
-          }, 5000)
-        })
-    } else {
-      dispatch(allRecords([]))
-    }
+    dispatch(initializeRecords(user))
   }, [user])
 
   return (
@@ -46,7 +29,7 @@ const Records = ( ) => {
           </tr>
         </thead>
         <tbody>
-          {records.map((record) => <Record key={record.id} record={record} />)}
+          {records.map((record) => <Record key={record.id} record={record} recordFormRef={recordFormRef} />)}
         </tbody>
       </table>
     </div>

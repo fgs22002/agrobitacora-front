@@ -1,8 +1,5 @@
 import React, { useState } from 'react'
-import loginService from '../services/login'
-import recordsService from '../services/records'
-import { userChange } from '../reducers/userReducer'
-import { setError } from '../reducers/notificationReducer'
+import { login } from '../reducers/userReducer'
 import { useDispatch } from 'react-redux'
 
 const LoginForm = () => {
@@ -19,22 +16,7 @@ const LoginForm = () => {
   }
 
   const handleLogin = async ({ username,password }) => {
-    try {
-      const user = await loginService.login({
-        username, password,
-      })
-
-      window.localStorage.setItem(
-        'loggedUser', JSON.stringify(user)
-      )
-      recordsService.setToken(user.token)
-      dispatch(userChange(user))
-    } catch (exception) {
-      dispatch(setError('Wrong credentials'))
-      setTimeout(() => {
-        dispatch(setError(null))
-      }, 5000)
-    }
+    dispatch(login(username, password))
   }
 
   const handleSubmit = (event) => {

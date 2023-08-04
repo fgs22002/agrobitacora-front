@@ -1,34 +1,13 @@
 import React from 'react'
-import recordsService from '../services/records'
-import { deleteRecord } from '../reducers/recordReducer'
-import { setError, setNotification } from '../reducers/notificationReducer'
+import { removeRecord } from '../reducers/recordReducer'
 import { useDispatch } from 'react-redux'
 import { toUpdateRecord } from '../reducers/updateReducer'
 
-const Record = ({ record }) => {
+const Record = ({ record, recordFormRef }) => {
   const dispatch = useDispatch()
 
   const handleDelete = (id) => {
-    recordsService
-      .remove(id)
-      .then(response => {
-        console.log(response)
-        dispatch(setNotification(
-          `Deleted ${id}`
-        ))
-        setTimeout(() => {
-          dispatch(setNotification(null))
-        }, 5000)
-        dispatch(deleteRecord(id))
-      }).catch(error => {
-        console.log(error)
-        dispatch(setError(
-          `Problems trying to delete record ${id}`
-        ))
-        setTimeout(() => {
-          dispatch(setError(null))
-        }, 5000)
-      })
+    dispatch(removeRecord(id))
   }
 
   const deleteClick = (record) => {
@@ -38,6 +17,7 @@ const Record = ({ record }) => {
   }
   const editClick = (record) => {
     if (window.confirm(`Edit ${record.id}?`)) {
+      recordFormRef.current.makeVisible(true)
       dispatch(toUpdateRecord(record))
     }
   }

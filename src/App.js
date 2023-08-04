@@ -4,8 +4,7 @@ import Notification from './components/Notification'
 import RecordForm from './components/RecordForm'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
-import recordsService from './services/records'
-import { userChange } from './reducers/userReducer'
+import { loggedIn, userChange } from './reducers/userReducer'
 import { allRecords } from './reducers/recordReducer'
 import { cancelUpdate } from './reducers/updateReducer'
 import { useDispatch, useSelector } from 'react-redux'
@@ -22,8 +21,7 @@ function App() {
     const loggedUserJson = window.localStorage.getItem('loggedUser')
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson)
-      dispatch(userChange(user))
-      recordsService.setToken(user.token)
+      dispatch(loggedIn(user))
     }
   }, [])
 
@@ -54,7 +52,7 @@ function App() {
           <Togglable buttonLabel='Record form' ref={recordFormRef}>
             <RecordForm />
           </Togglable>
-          <Records />
+          <Records recordFormRef={recordFormRef} />
         </div>
       }
 
